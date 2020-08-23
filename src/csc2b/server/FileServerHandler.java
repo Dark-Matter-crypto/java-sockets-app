@@ -107,9 +107,14 @@ public class FileServerHandler implements Runnable{
                         File pdfFile = new File("data/server/" + pdfName + ".Pdf");
 
                         if (pdfFile.exists()){
+                            //Send the file size
                             pw.write(String.valueOf(pdfFile.length()));
                             pw.flush();
+                            //Send the file name
+                            pw.write(pdfName);
+                            pw.flush();
 
+                            //Send the binary file
                             FileInputStream fs = new FileInputStream(pdfFile);
                             byte[] buffer = new byte[2048];
                             int n = 0;

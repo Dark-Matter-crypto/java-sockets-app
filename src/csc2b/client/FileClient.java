@@ -48,12 +48,46 @@ public class FileClient {
         out.flush();
     }
 
-    public void uploadFile(int fileID, String fileName, int fileSize){
+    public String uploadFile(int fileID, String fileName, int fileSize){
+        String clientResponse = null;
+        pw.println("TAKEOFF <" + fileID + "> <" + fileName + "> <" + fileSize + "> <Pdf>");
+        pw.flush();
 
+        File pdfFile = new File("data/client/" + fileName + ".Pdf");
+
+        if (pdfFile.exists()){
+
+            try{
+                //Send the binary file
+                FileInputStream fs = new FileInputStream(pdfFile);
+                byte[] buffer = new byte[2048];
+                int n = 0;
+
+                while((n = fs.read(buffer)) > 0){
+                    out.write(buffer, 0, n);
+                    out.flush();
+                }
+
+                fs.close();
+                System.out.println("File sent to server.");
+                clientResponse = "File sent to server.";
+                return clientResponse;
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+        return clientResponse;
     }
 
-    public void readFileList(){
-
+    public String readFileList(){
+        String serverResponse = null;
+        try {
+            serverResponse = br.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return serverResponse;
     }
 
     public String downloadFile(int fileID){
@@ -65,8 +99,26 @@ public class FileClient {
         FileOutputStream fos = null;
         try{
             String response = br.readLine();
+            String fileName = br.readLine();
+            int fileSize = Integer.parseInt(response);
 
-            severResponse = "File size: " + response;
+            File downloadFile = new File("data/client/" + fileName + ".Pdf");
+            fos = new FileOutputStream(downloadFile);
+            byte[] buffer = new byte[2048];
+            int n = 0;
+            int totalBytes = 0;
+
+            while(totalBytes != fileSize)
+            {
+                n = in.read(buffer,0, buffer.length);
+                fos.write(buffer,0,n);
+                fos.flush();
+                totalBytes += n;
+            }
+
+            fos.close();
+
+            severResponse = "File size: " + response + "\nFile, " + fileName + ".pdf, downloaded successfully.\n";
             System.out.println("File downloaded to the client directory.");
         }
         catch (IOException e) {
