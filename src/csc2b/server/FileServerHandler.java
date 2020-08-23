@@ -105,25 +105,23 @@ public class FileServerHandler implements Runnable{
                         }
 
                         File pdfFile = new File("data/server/" + pdfName + ".Pdf");
-                        int fileSize = Integer.parseInt(String.valueOf(pdfFile.length()));
-                        pw.println(fileSize);
-                        pw.flush();
 
-                        FileOutputStream fos = new FileOutputStream(pdfFile);
-                        byte[] buffer = new byte[5000];
-                        int n = 0;
-                        int totalBytes = 0;
+                        if (pdfFile.exists()){
+                            pw.write(String.valueOf(pdfFile.length()));
+                            pw.flush();
 
-                        while(totalBytes != fileSize)
-                        {
-                            n = in.read(buffer,0, buffer.length);
-                            fos.write(buffer,0,n);
-                            fos.flush();
-                            totalBytes += n;
+                            FileInputStream fs = new FileInputStream(pdfFile);
+                            byte[] buffer = new byte[2048];
+                            int n = 0;
+
+                            while((n = fs.read(buffer)) > 0){
+                                out.write(buffer, 0, n);
+                                out.flush();
+                            }
+
+                            fs.close();
+                            System.out.println("File sent to client");
                         }
-
-                        fos.close();
-                        System.out.println("File sent to client");
 
                     }
 
@@ -131,24 +129,24 @@ public class FileServerHandler implements Runnable{
                 else if (takeMatcher.matches()){
                     File filesList = new File(FILES_LIST);
                     String pdfName = takeMatcher.group(2);
-
                     File pdfFile = new File("data/server/" + pdfName + ".Pdf");
-                    if (pdfFile.exists()){
-                        pw.write("Size: " + pdfFile.length());
-                        pw.flush();
 
-                        FileInputStream fs = new FileInputStream(pdfFile);
-                        byte[] buffer = new byte[5000];
-                        int n = 0;
+                    FileOutputStream fos = new FileOutputStream(pdfFile);
+                    int fileSize = Integer.parseInt(String.valueOf(pdfFile.length()));
+                    byte[] buffer = new byte[2048];
+                    int n = 0;
+                    int totalBytes = 0;
 
-                        while((n = fs.read(buffer)) > 0){
-                            out.write(buffer, 0, n);
-                            out.flush();
-                        }
-
-                        fs.close();
-                        System.out.println("File sent to server");
+                    while(totalBytes != fileSize)
+                    {
+                        n = in.read(buffer,0, buffer.length);
+                        fos.write(buffer,0,n);
+                        fos.flush();
+                        totalBytes += n;
                     }
+
+                    fos.close();
+                    System.out.println("File received from client.");
 
                     if (filesList.exists()){
                         PrintWriter txtout = null;
