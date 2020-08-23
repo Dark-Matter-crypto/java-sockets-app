@@ -15,68 +15,67 @@ import javafx.scene.paint.Color;
 
 
 public class FilePane extends StackPane {
-    private String toAddress = null;
-    private String fromAddress = null;
-    private String ccAddress = null;
-    private String subject = null;
-    private String message = null;
+    private String fileName = null;
+    private String fileSize = null;
+    private String fileID = null;
 
     public FilePane(){
         FileClient clientConnection = new FileClient(2844);
 
         //Create layout nodes
-        TextField fromAddressForm = new TextField("");
-        fromAddressForm.setPrefWidth(400);
-        TextField toAddressForm = new TextField("");
-        toAddressForm.setPrefWidth(400);
-        TextField ccAddressForm = new TextField("");
-        ccAddressForm.setPrefWidth(400);
-        TextField subjectForm = new TextField("");
-        subjectForm.setPrefWidth(400);
+        TextField idField1 = new TextField("");
+        idField1.setPrefWidth(100);
+        TextField idField2 = new TextField("");
+        idField2.setPrefWidth(100);
+        TextField fileName = new TextField("");
+        fileName.setPrefWidth(100);
+        TextField fileSize = new TextField("");
+        fileSize.setPrefWidth(100);
         TextArea messageForm = new TextArea("");
-        Button emailSender = new Button("Send Email");
-        Label response = new Label();
-        response.setPadding(new Insets(5, 10, 5, 10));
-        Label msgLabel = new Label("Message:");
-        msgLabel.setPadding(new Insets(5, 10, 5, 10));
+        messageForm.setEditable(false);
+        Label id = new Label("File ID: ");
+        Label name = new Label("File Name: ");
+        Label size = new Label("File Size: ");
+        Button showFiles = new Button("Show Files");
+        Button sendFile = new Button("Upload File");
+        Button getFile = new Button("Download File");
 
-        //Read data from the forms and send email
-        emailSender.setOnAction((ActionEvent e) -> {
-            if (fromAddressForm.getText().isEmpty() || toAddressForm.getText().isEmpty() || messageForm.getText().isEmpty()){
-                response.setTextFill(Color.web("#8B0000", 1));
-                response.setText("Please fill out all fields in order to send email.");
-            }
-            else{
 
-            }
+        //Show files list
+        showFiles.setOnAction((ActionEvent e) -> {
+            messageForm.appendText(clientConnection.readFileList());
+        });
+
+        //Show files list
+        sendFile.setOnAction((ActionEvent e) -> {
+            messageForm.appendText(clientConnection.uploadFile(Integer.parseInt(idField2.getText()), fileName.getText(), Integer.parseInt(fileSize.getText())));
+        });
+
+        //Show files list
+        getFile.setOnAction((ActionEvent e) -> {
+            messageForm.appendText(clientConnection.downloadFile(Integer.parseInt(idField1.getText())));
         });
 
         //Add nodes to pane
-        HBox fromBox = new HBox();
-        fromBox.setPadding(new Insets(25, 10, 5, 30));
-        fromBox.getChildren().add(new Label("From:      "));
-        fromBox.getChildren().add(fromAddressForm);
-        HBox toBox = new HBox();
-        toBox.setPadding(new Insets(5, 10, 5, 30));
-        toBox.getChildren().add(new Label("To:          "));
-        toBox.getChildren().add(toAddressForm);
-        HBox ccBox = new HBox();
-        ccBox.setPadding(new Insets(5, 10, 5, 30));
-        ccBox.getChildren().add(new Label("Cc:          "));
-        ccBox.getChildren().add(ccAddressForm);
-        HBox subBox = new HBox();
-        subBox.setPadding(new Insets(5, 10, 5, 30));
-        subBox.getChildren().add(new Label("Subject:  "));
-        subBox.getChildren().add(subjectForm);
+        HBox upBox = new HBox();
+        upBox.setPadding(new Insets(10, 10, 5, 30));
+        upBox.getChildren().addAll(id, idField2, name, fileName, size, fileSize, sendFile);
+
+        HBox downBox = new HBox();
+        downBox.setPadding(new Insets(5, 10, 5, 30));
+        downBox.getChildren().addAll(id, idField1, getFile);
+
+        HBox showBox = new HBox();
+        showBox.setPadding(new Insets(25, 10, 5, 30));
+        showBox.getChildren().add(showFiles);
+
         BorderPane composer = new BorderPane();
         composer.setPadding(new Insets(15, 10, 15, 10));
         composer.setCenter(messageForm);
-        HBox buttonBox = new HBox();
-        buttonBox.setPadding(new Insets(10, 10, 5, 10));
-        buttonBox.getChildren().add(emailSender);
+
 
         VBox vBox = new VBox();
-        vBox.getChildren().addAll(fromBox, toBox, ccBox, subBox, response, msgLabel, composer, buttonBox);
+        vBox.getChildren().addAll(upBox, downBox, showBox, composer);
 
         BorderPane body = new BorderPane();
         body.setCenter(vBox);
