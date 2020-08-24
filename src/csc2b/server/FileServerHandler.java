@@ -69,7 +69,6 @@ public class FileServerHandler implements Runnable{
                                 String entry = txtin.nextLine();
                                 list += entry + "@";
                             }
-                            System.out.println(list);
                             pw.println(list);
                             pw.flush();
 
@@ -134,9 +133,6 @@ public class FileServerHandler implements Runnable{
                         }
 
                     }
-                    else{
-                        System.out.println("File does not exist");
-                    }
 
                 }
                 else if (takeMatcher.matches()){
@@ -148,7 +144,7 @@ public class FileServerHandler implements Runnable{
 
                     try{
                         int fileSize = Integer.parseInt(takeMatcher.group(3));
-                        byte[] buffer = new byte[1024];
+                        byte[] buffer = new byte[2048];
                         int n = 0;
                         int totalBytes = 0;
 
@@ -159,6 +155,8 @@ public class FileServerHandler implements Runnable{
                             fos.flush();
                             totalBytes += n;
                         }
+
+                        fos.close();
                         System.out.println("File received from client.");
 
                         FileWriter filesList = new FileWriter(FILES_LIST, true);
@@ -167,7 +165,7 @@ public class FileServerHandler implements Runnable{
 
                         try{
                             txtout = new PrintWriter(filesList);
-                            txtout.println("\r\n" + takeMatcher.group(1) + " " + takeMatcher.group(2) + ".pdf");
+                            txtout.println("\n" + takeMatcher.group(1) + " " + takeMatcher.group(2) + ".pdf");
                             txtout.flush();
                         }
                         catch (Exception ex){
@@ -178,6 +176,7 @@ public class FileServerHandler implements Runnable{
                                 txtout.close();
                             try {
                                 if(bw != null)
+                                    bw.flush();
                                     bw.close();
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -193,19 +192,10 @@ public class FileServerHandler implements Runnable{
                     catch (IOException ex){
                         ex.printStackTrace();
                     }
-                    finally {
-                        if (fos != null){
-                            try {
-                                fos.close();
-                            }
-                            catch (IOException ex){
-                                ex.printStackTrace();
-                            }
-                        }
-                    }
                 }
                 else {
                     System.out.println("Command not recognised.");
+                    br.reset();
                 }
             }
         }

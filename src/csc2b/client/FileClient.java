@@ -49,7 +49,6 @@ public class FileClient {
 
     public String uploadFile(int fileID, String fileName, int fileSize){
         String clientResponse = null;
-        pw.flush();
         pw.println("TAKEOFF <" + fileID + "> <" + fileName + "> <" + fileSize + "> <Pdf>");
         pw.flush();
 
@@ -81,7 +80,6 @@ public class FileClient {
     }
 
     public String readFileList(){
-        pw.flush();
         pw.println("SHOW");
         pw.flush();
 
@@ -95,7 +93,6 @@ public class FileClient {
     }
 
     public String downloadFile(int fileID){
-        pw.flush();
         pw.println("LANDING <" + fileID + ">");
         pw.flush();
 
@@ -123,7 +120,7 @@ public class FileClient {
 
             fos.close();
 
-            severResponse = "File size: " + response + "\nFile, " + fileName + ".pdf, downloaded successfully.\n";
+            severResponse = "File size: " + response + "\nFile, " + fileName + ", downloaded successfully.\n";
             System.out.println("File downloaded to the client directory.");
         }
         catch (IOException e) {

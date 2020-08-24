@@ -51,7 +51,6 @@ public class FilePane extends StackPane {
         //Show files list
         showFiles.setOnAction((ActionEvent e) -> {
             String message = clientConnection.readFileList();
-            System.out.println(message);
             StringTokenizer messageTokens = new StringTokenizer(message, "@");
             messageForm.clear();
             while (messageTokens.hasMoreTokens()){
