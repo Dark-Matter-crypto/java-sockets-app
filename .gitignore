@@ -1,4 +1,5 @@
 *.idea
 *.iml
 out/production
-data/
+data/client
+data/server
