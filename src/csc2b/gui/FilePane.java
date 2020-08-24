@@ -28,7 +28,7 @@ public class FilePane extends StackPane {
         TextField idField2 = new TextField("");
         idField2.setPrefWidth(100);
         TextField fileName = new TextField("");
-        fileName.setPrefWidth(100);
+        fileName.setPrefWidth(170);
         TextField fileSize = new TextField("");
         fileSize.setPrefWidth(100);
         TextArea messageForm = new TextArea("");
@@ -36,11 +36,11 @@ public class FilePane extends StackPane {
         Label id1 = new Label("File ID: ");
         id1.setPadding(new Insets(0, 10, 0, 30));
         Label id2 = new Label("File ID: ");
-        id2.setPadding(new Insets(0, 10, 0, 30));
+        id2.setPadding(new Insets(0, 10, 0, 15));
         Label name = new Label("File Name: ");
-        name.setPadding(new Insets(0, 10, 0, 30));
+        name.setPadding(new Insets(0, 10, 0, 20));
         Label size = new Label("File Size: ");
-        size.setPadding(new Insets(0, 10, 0, 30));
+        size.setPadding(new Insets(0, 10, 0, 20));
         Button showFiles = new Button("Show Files");
         Button sendFile = new Button("Upload File");
         Button getFile = new Button("Download File");
@@ -51,10 +51,10 @@ public class FilePane extends StackPane {
         //Show files list
         showFiles.setOnAction((ActionEvent e) -> {
             String message = clientConnection.readFileList();
-
+            System.out.println(message);
             StringTokenizer messageTokens = new StringTokenizer(message, "@");
+            messageForm.clear();
             while (messageTokens.hasMoreTokens()){
-                messageForm.clear();
                 messageForm.appendText(messageTokens.nextToken() + "\r\n");
             }
         });

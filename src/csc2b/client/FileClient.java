@@ -49,6 +49,7 @@ public class FileClient {
 
     public String uploadFile(int fileID, String fileName, int fileSize){
         String clientResponse = null;
+        pw.flush();
         pw.println("TAKEOFF <" + fileID + "> <" + fileName + "> <" + fileSize + "> <Pdf>");
         pw.flush();
 
@@ -59,7 +60,7 @@ public class FileClient {
             try{
                 //Send the binary file
                 FileInputStream fs = new FileInputStream(pdfFile);
-                byte[] buffer = new byte[2048];
+                byte[] buffer = new byte[1024];
                 int n = 0;
 
                 while((n = fs.read(buffer)) > 0){
@@ -80,13 +81,13 @@ public class FileClient {
     }
 
     public String readFileList(){
+        pw.flush();
         pw.println("SHOW");
         pw.flush();
 
         String serverResponse = null;
         try {
             serverResponse = br.readLine();
-            System.out.println(serverResponse);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -94,6 +95,7 @@ public class FileClient {
     }
 
     public String downloadFile(int fileID){
+        pw.flush();
         pw.println("LANDING <" + fileID + ">");
         pw.flush();
 
@@ -102,9 +104,7 @@ public class FileClient {
         FileOutputStream fos = null;
         try{
             String response = br.readLine();
-            System.out.println(response);
             String fileName = br.readLine();
-            System.out.println(fileName);
             int fileSize = Integer.parseInt(response);
 
             File downloadFile = new File("data/client/" + fileName);

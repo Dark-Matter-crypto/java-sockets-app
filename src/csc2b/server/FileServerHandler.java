@@ -22,7 +22,6 @@ public class FileServerHandler implements Runnable{
 
     //Constructor
     public FileServerHandler(Socket clientConnection){
-        System.out.println("Hello world");
         this.clientConnection = clientConnection;
 
         try {
@@ -85,12 +84,10 @@ public class FileServerHandler implements Runnable{
                     }
                 }
                 else if (landMatcher.matches()){
-                    System.out.println("Matched for landing");
                     File filesList = new File(FILES_LIST);
                     String pdfName = null;
 
                     if (filesList.exists()){
-                        System.out.println("File does exists");
                         Scanner txtin = null;
 
                         try{
@@ -100,7 +97,6 @@ public class FileServerHandler implements Runnable{
                                 StringTokenizer fileTokens = new StringTokenizer(line);
                                 if (fileTokens.nextToken().equals((String)landMatcher.group(1))){
                                     pdfName = fileTokens.nextToken();
-                                    System.out.println(pdfName);
                                     break;
                                 }
                             }
@@ -116,7 +112,6 @@ public class FileServerHandler implements Runnable{
                         File pdfFile = new File("data/server/" + pdfName);
 
                         if (pdfFile.exists()){
-                            System.out.println("PDF FOUND");
                             //Send the file size
                             pw.println(pdfFile.length());
                             pw.flush();
@@ -137,9 +132,6 @@ public class FileServerHandler implements Runnable{
                             fs.close();
                             System.out.println("File sent to client");
                         }
-                        else {
-                            System.out.println("PDF NOT FOUND!!!!!!!!!");
-                        }
 
                     }
                     else{
@@ -148,40 +140,67 @@ public class FileServerHandler implements Runnable{
 
                 }
                 else if (takeMatcher.matches()){
-                    File filesList = new File(FILES_LIST);
+
                     String pdfName = takeMatcher.group(2);
-                    System.out.println("PDF Name: " + pdfName);
-                    File pdfFile = new File("data/server/" + pdfName);
+                    File pdfFile = new File("data/server/" + pdfName + ".pdf");
 
                     FileOutputStream fos = new FileOutputStream(pdfFile);
-                    int fileSize = Integer.parseInt(String.valueOf(pdfFile.length()));
-                    byte[] buffer = new byte[2048];
-                    int n = 0;
-                    int totalBytes = 0;
 
-                    while(totalBytes != fileSize)
-                    {
-                        n = in.read(buffer,0, buffer.length);
-                        fos.write(buffer,0,n);
-                        fos.flush();
-                        totalBytes += n;
-                    }
+                    try{
+                        int fileSize = Integer.parseInt(takeMatcher.group(3));
+                        byte[] buffer = new byte[1024];
+                        int n = 0;
+                        int totalBytes = 0;
 
-                    fos.close();
-                    System.out.println("File received from client.");
+                        while(totalBytes != fileSize)
+                        {
+                            n = in.read(buffer,0, buffer.length);
+                            fos.write(buffer,0,n);
+                            fos.flush();
+                            totalBytes += n;
+                        }
+                        System.out.println("File received from client.");
 
-                    if (filesList.exists()){
-                        PrintWriter txtout = null;
+                        FileWriter filesList = new FileWriter(FILES_LIST, true);
+                        BufferedWriter bw = new BufferedWriter(filesList);
+                        PrintWriter txtout = new PrintWriter(bw);
 
                         try{
                             txtout = new PrintWriter(filesList);
-                            txtout.println(takeMatcher.group(1) + " " + takeMatcher.group(2) + " " + takeMatcher.group(4) + "\n");
+                            txtout.println("\r\n" + takeMatcher.group(1) + " " + takeMatcher.group(2) + ".pdf");
+                            txtout.flush();
                         }
-                        catch (FileNotFoundException ex){
+                        catch (Exception ex){
                             ex.printStackTrace();
                         }
                         finally {
-                            if (txtout != null) txtout.close();
+                            if(txtout != null)
+                                txtout.close();
+                            try {
+                                if(bw != null)
+                                    bw.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                if(filesList != null)
+                                    filesList.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    catch (IOException ex){
+                        ex.printStackTrace();
+                    }
+                    finally {
+                        if (fos != null){
+                            try {
+                                fos.close();
+                            }
+                            catch (IOException ex){
+                                ex.printStackTrace();
+                            }
                         }
                     }
                 }
