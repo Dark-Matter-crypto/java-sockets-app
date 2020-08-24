@@ -15,7 +15,7 @@ public class FileClient {
     public FileClient(int port) {
         this.port = port;
         try {
-            Socket severConnection = new Socket("localhost", this.port);
+            Socket severConnection = new Socket("localhost", port);
             System.out.println("Connected to the file server.");
 
             pw = new PrintWriter(severConnection.getOutputStream(), true);
@@ -23,7 +23,6 @@ public class FileClient {
             out = new DataOutputStream(new BufferedOutputStream(severConnection.getOutputStream()));
             in = new DataInputStream(new BufferedInputStream(severConnection.getInputStream()));
 
-            System.out.println(readServerResponse(br));
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -53,7 +52,7 @@ public class FileClient {
         pw.println("TAKEOFF <" + fileID + "> <" + fileName + "> <" + fileSize + "> <Pdf>");
         pw.flush();
 
-        File pdfFile = new File("data/client/" + fileName + ".Pdf");
+        File pdfFile = new File("data/client/" + fileName + ".pdf");
 
         if (pdfFile.exists()){
 
@@ -81,9 +80,13 @@ public class FileClient {
     }
 
     public String readFileList(){
+        pw.println("SHOW");
+        pw.flush();
+
         String serverResponse = null;
         try {
             serverResponse = br.readLine();
+            System.out.println(serverResponse);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -99,10 +102,12 @@ public class FileClient {
         FileOutputStream fos = null;
         try{
             String response = br.readLine();
+            System.out.println(response);
             String fileName = br.readLine();
+            System.out.println(fileName);
             int fileSize = Integer.parseInt(response);
 
-            File downloadFile = new File("data/client/" + fileName + ".Pdf");
+            File downloadFile = new File("data/client/" + fileName);
             fos = new FileOutputStream(downloadFile);
             byte[] buffer = new byte[2048];
             int n = 0;

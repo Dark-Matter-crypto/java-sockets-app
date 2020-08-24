@@ -18,10 +18,11 @@ public class FileServerHandler implements Runnable{
     private static DataOutputStream out = null;
     private static DataInputStream in = null;
 
-    private static final String FILES_LIST = "data/server/filesList.txt";
+    private static final String FILES_LIST = "data/server/PdfList.txt";
 
     //Constructor
     public FileServerHandler(Socket clientConnection){
+        System.out.println("Hello world");
         this.clientConnection = clientConnection;
 
         try {
@@ -64,10 +65,15 @@ public class FileServerHandler implements Runnable{
 
                         try{
                             txtin = new Scanner(filesList);
+                            String list = "";
                             while (txtin.hasNext()){
-                                pw.write(txtin.nextLine());
-                                pw.flush();
+                                String entry = txtin.nextLine();
+                                list += entry + "@";
                             }
+                            System.out.println(list);
+                            pw.println(list);
+                            pw.flush();
+
                         }catch(FileNotFoundException ex){
                             ex.printStackTrace();
                         }
@@ -79,10 +85,12 @@ public class FileServerHandler implements Runnable{
                     }
                 }
                 else if (landMatcher.matches()){
+                    System.out.println("Matched for landing");
                     File filesList = new File(FILES_LIST);
                     String pdfName = null;
 
                     if (filesList.exists()){
+                        System.out.println("File does exists");
                         Scanner txtin = null;
 
                         try{
@@ -92,6 +100,7 @@ public class FileServerHandler implements Runnable{
                                 StringTokenizer fileTokens = new StringTokenizer(line);
                                 if (fileTokens.nextToken().equals((String)landMatcher.group(1))){
                                     pdfName = fileTokens.nextToken();
+                                    System.out.println(pdfName);
                                     break;
                                 }
                             }
@@ -104,14 +113,15 @@ public class FileServerHandler implements Runnable{
                             }
                         }
 
-                        File pdfFile = new File("data/server/" + pdfName + ".Pdf");
+                        File pdfFile = new File("data/server/" + pdfName);
 
                         if (pdfFile.exists()){
+                            System.out.println("PDF FOUND");
                             //Send the file size
-                            pw.write(String.valueOf(pdfFile.length()));
+                            pw.println(pdfFile.length());
                             pw.flush();
                             //Send the file name
-                            pw.write(pdfName);
+                            pw.println(pdfName);
                             pw.flush();
 
                             //Send the binary file
@@ -127,14 +137,21 @@ public class FileServerHandler implements Runnable{
                             fs.close();
                             System.out.println("File sent to client");
                         }
+                        else {
+                            System.out.println("PDF NOT FOUND!!!!!!!!!");
+                        }
 
+                    }
+                    else{
+                        System.out.println("File does not exist");
                     }
 
                 }
                 else if (takeMatcher.matches()){
                     File filesList = new File(FILES_LIST);
                     String pdfName = takeMatcher.group(2);
-                    File pdfFile = new File("data/server/" + pdfName + ".Pdf");
+                    System.out.println("PDF Name: " + pdfName);
+                    File pdfFile = new File("data/server/" + pdfName);
 
                     FileOutputStream fos = new FileOutputStream(pdfFile);
                     int fileSize = Integer.parseInt(String.valueOf(pdfFile.length()));
@@ -167,6 +184,9 @@ public class FileServerHandler implements Runnable{
                             if (txtout != null) txtout.close();
                         }
                     }
+                }
+                else {
+                    System.out.println("Command not recognised.");
                 }
             }
         }

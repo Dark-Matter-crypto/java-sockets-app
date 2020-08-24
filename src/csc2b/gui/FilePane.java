@@ -11,7 +11,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+
+import java.util.StringTokenizer;
 
 
 public class FilePane extends StackPane {
@@ -20,7 +21,6 @@ public class FilePane extends StackPane {
     private String fileID = null;
 
     public FilePane(){
-        FileClient clientConnection = new FileClient(2844);
 
         //Create layout nodes
         TextField idField1 = new TextField("");
@@ -33,44 +33,62 @@ public class FilePane extends StackPane {
         fileSize.setPrefWidth(100);
         TextArea messageForm = new TextArea("");
         messageForm.setEditable(false);
-        Label id = new Label("File ID: ");
+        Label id1 = new Label("File ID: ");
+        id1.setPadding(new Insets(0, 10, 0, 30));
+        Label id2 = new Label("File ID: ");
+        id2.setPadding(new Insets(0, 10, 0, 30));
         Label name = new Label("File Name: ");
+        name.setPadding(new Insets(0, 10, 0, 30));
         Label size = new Label("File Size: ");
+        size.setPadding(new Insets(0, 10, 0, 30));
         Button showFiles = new Button("Show Files");
         Button sendFile = new Button("Upload File");
         Button getFile = new Button("Download File");
 
 
+        FileClient clientConnection = new FileClient(2020);
+
         //Show files list
         showFiles.setOnAction((ActionEvent e) -> {
-            messageForm.appendText(clientConnection.readFileList());
+            String message = clientConnection.readFileList();
+
+            StringTokenizer messageTokens = new StringTokenizer(message, "@");
+            while (messageTokens.hasMoreTokens()){
+                messageForm.clear();
+                messageForm.appendText(messageTokens.nextToken() + "\r\n");
+            }
         });
 
-        //Show files list
+        //Upload File
         sendFile.setOnAction((ActionEvent e) -> {
-            messageForm.appendText(clientConnection.uploadFile(Integer.parseInt(idField2.getText()), fileName.getText(), Integer.parseInt(fileSize.getText())));
+            String message = clientConnection.uploadFile(Integer.parseInt(idField2.getText()), fileName.getText(), Integer.parseInt(fileSize.getText()));
+
+            System.out.println(message);
+            messageForm.appendText(message);
         });
 
-        //Show files list
+        //Download file
         getFile.setOnAction((ActionEvent e) -> {
-            messageForm.appendText(clientConnection.downloadFile(Integer.parseInt(idField1.getText())));
+            String message = clientConnection.downloadFile(Integer.parseInt(idField1.getText()));
+            System.out.println(message);
+            messageForm.appendText(message);
         });
 
         //Add nodes to pane
         HBox upBox = new HBox();
-        upBox.setPadding(new Insets(10, 10, 5, 30));
-        upBox.getChildren().addAll(id, idField2, name, fileName, size, fileSize, sendFile);
+        upBox.setPadding(new Insets(50, 10, 10, 30));
+        upBox.getChildren().addAll(sendFile, id1, idField2, name, fileName, size, fileSize);
 
         HBox downBox = new HBox();
-        downBox.setPadding(new Insets(5, 10, 5, 30));
-        downBox.getChildren().addAll(id, idField1, getFile);
+        downBox.setPadding(new Insets(10, 10, 10, 30));
+        downBox.getChildren().addAll(getFile, id2, idField1);
 
         HBox showBox = new HBox();
-        showBox.setPadding(new Insets(25, 10, 5, 30));
+        showBox.setPadding(new Insets(10, 10, 5, 30));
         showBox.getChildren().add(showFiles);
 
         BorderPane composer = new BorderPane();
-        composer.setPadding(new Insets(15, 10, 15, 10));
+        composer.setPadding(new Insets(15, 10, 0, 10));
         composer.setCenter(messageForm);
 
 

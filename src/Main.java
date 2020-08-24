@@ -1,3 +1,4 @@
+import csc2b.client.FileClient;
 import csc2b.gui.FilePane;
 import csc2b.server.FileServer;
 import javafx.application.Application;
@@ -10,11 +11,6 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-        //Connect to port 2844
-        FileServer server = new FileServer(2844);
-        //Run file server
-        server.runServer();
-
         FilePane layout = new FilePane();
         Scene scene = new Scene(layout, 750, 500);
 
@@ -23,6 +19,7 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
+
     }
 
 
