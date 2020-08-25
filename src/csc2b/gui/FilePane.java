@@ -72,11 +72,10 @@ public class FilePane extends StackPane {
             StringTokenizer fileTokens = new StringTokenizer(fileName.getText(), ".");
             String name = fileTokens.nextToken();
             int size = (int) fileToSend.length();
-            System.out.println("Name: " + name + ", Size: " + size);
-            //String message = clientConnection.uploadFile(Integer.parseInt(idField2.getText()), name, size);
+            String message = clientConnection.uploadFile(Integer.parseInt(idField2.getText()), name, size);
 
-            //System.out.println(message);
-            //messageForm.appendText(message);
+            System.out.println(message);
+            messageForm.appendText(message);
         });
 
         //Choose file
