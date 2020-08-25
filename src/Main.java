@@ -11,11 +11,10 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-        FilePane layout = new FilePane();
-        Scene scene = new Scene(layout, 750, 500);
-
         //Present scene to stage
         primaryStage.setTitle("Peachy-Airlines");
+        FilePane layout = new FilePane();
+        Scene scene = new Scene(layout, 750, 500);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();

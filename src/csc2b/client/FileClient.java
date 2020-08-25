@@ -11,17 +11,21 @@ public class FileClient {
     private static DataInputStream in = null;
     private static int port;
 
+    private static  boolean connected = false;
+
     //Constructor
     public FileClient(int port) {
         this.port = port;
         try {
             Socket severConnection = new Socket("localhost", port);
-            System.out.println("Connected to the file server.");
 
             pw = new PrintWriter(severConnection.getOutputStream(), true);
             br = new BufferedReader(new InputStreamReader(severConnection.getInputStream()));
             out = new DataOutputStream(new BufferedOutputStream(severConnection.getOutputStream()));
             in = new DataInputStream(new BufferedInputStream(severConnection.getInputStream()));
+
+            System.out.println("Connected to the file server.");
+            connected = true;
 
         }
         catch (IOException e) {
@@ -138,5 +142,8 @@ public class FileClient {
         return severResponse;
     }
 
+    public boolean isClientedConnected(){
+        return  connected;
+    }
 
 }

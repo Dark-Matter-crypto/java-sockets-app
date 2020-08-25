@@ -16,7 +16,7 @@ public class FileServer {
 
         System.out.println("Binding to port: " + 2844);
         try {
-            ss = new ServerSocket(2020);
+            ss = new ServerSocket(2844);
             serverRunning = true;
             System.out.println("Waiting for connections. . .\n");
             runServer();
